@@ -1,20 +1,18 @@
 import Vue from 'vue';
-import VueRouter from 'vue-router';
 
 import App from './App.vue';
-import { routes } from './routes';
+import router from './routes';
 import { store } from './store/store';
+import { auth } from './firebaseConfig';
 
-Vue.use(VueRouter);
-
-const router = new VueRouter({
-  routes: routes,
-  mode: 'history',
-});
-
-new Vue({
-  el: '#app',
-  render: (h) => h(App),
-  router: router,
-  store: store,
+let app;
+auth.onAuthStateChanged((user) => {
+  store.state.isAuthenticated = user !== null;
+  if (!app) {
+    app = new Vue({
+      render: (h) => h(App),
+      router: router,
+      store: store,
+    }).$mount('#app');
+  }
 });

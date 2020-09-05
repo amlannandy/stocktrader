@@ -14,7 +14,7 @@
           ></textarea>
         </div>
         <button @click="updateStock()" class="btn btn-warning">Update</button>
-        <button class="btn btn-danger">Delete</button>
+        <button @click="deleteStock()" class="btn btn-danger">Delete</button>
       </div>
     </div>
   </div>
@@ -33,6 +33,7 @@ export default {
   data() {
     return {
       stock: {
+        id: this.data.id,
         price: this.data.price,
         description: this.data.description,
       },
@@ -40,7 +41,31 @@ export default {
   },
   methods: {
     updateStock() {
-      console.log(this.stock);
+      if (this.stock.price <= 0 || this.stock.description == "") {
+        this.$store.dispatch({
+          type: "addAlert",
+          message: "Cannot update with invalid value",
+          duration: 3000,
+          style: "alert-danger",
+        });
+        return;
+      }
+      this.$store.dispatch({ type: "updateStock", stock: this.stock });
+      this.$store.dispatch({
+        type: "addAlert",
+        message: "Stock updated",
+        duration: 3000,
+        style: "alert-success",
+      });
+    },
+    deleteStock() {
+      this.$store.dispatch({ type: "deleteStock", id: this.stock.id });
+      // this.$store.dispatch({
+      //   type: "addAlert",
+      //   message: "Stock deleted",
+      //   duration: 3000,
+      //   style: "alert-primary",
+      // });
     },
   },
 };

@@ -15,7 +15,7 @@ export default {
   computed: {
     ...mapGetters(["getStocks"]),
   },
-  mounted() {
+  created() {
     this.$store.dispatch({ type: "fetchStocks" });
   },
 };

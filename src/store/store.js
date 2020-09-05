@@ -10,6 +10,7 @@ export const store = new Vuex.Store({
     alerts: [],
     stocks: [],
     userStocks: [],
+    isAuthenticated: false,
   },
   getters: {
     getAlerts(state) {
@@ -21,6 +22,9 @@ export const store = new Vuex.Store({
     getUserStocks(state) {
       return state.userStocks;
     },
+    getAuthStatus(state) {
+      return state.isAuthenticated;
+    },
   },
   mutations: {
     addAlert(state, payload) {
@@ -30,26 +34,55 @@ export const store = new Vuex.Store({
       }, payload.duration);
     },
     addStock(state, payload) {
-      state.stocks.push(payload.stock);
+      //state.stocks.push(payload);
     },
+    updateStock(state, payload) {},
     fetchStocks(state, payload) {
       state.stocks = payload;
     },
+    deleteStock(state, payload) {
+      state.stocks = state.stocks.filter((st) => st.id != payload);
+    },
+    switchAuthStatus(state, payload) {
+      state.isAuthenticated = payload;
+    },
   },
   actions: {
+    switchAuthStatus({ commit }, payload) {
+      commit('switchAuthStatus', payload.status);
+    },
     addAlert({ commit }, payload) {
       commit('addAlert', payload);
     },
     addStock({ commit }, payload) {
       db.collection('stocks')
         .add(payload.stock)
-        .then(() => commit('addStock', payload))
+        .then(() => commit('addStock', payload.stock))
         .catch((err) => console.log(err));
     },
     updateStock({ commit }, payload) {
       db.collection('stocks')
+        .doc(payload.stock.id)
+        .update({
+          description: payload.stock.description,
+          price: +payload.stock.price,
+        })
+        .then(() => commit('updateStock', payload.stock))
+        .catch((err) => console.log(err));
+    },
+    deleteStock({ commit }, payload) {
+      db.collection('stocks')
         .doc(payload.id)
-        .update();
+        .delete()
+        .then(() => {
+          commit('deleteStock', payload.id);
+          commit('addAlert', {
+            message: 'Stock updated',
+            duration: 3000,
+            style: 'alert-success',
+          });
+        })
+        .catch((err) => console.log(err));
     },
     fetchStocks({ commit }) {
       let currentStocks = [];
@@ -63,7 +96,6 @@ export const store = new Vuex.Store({
               price: +doc.data().price,
               description: doc.data().description,
             };
-            console.log(stock);
             currentStocks.push(stock);
           });
           commit('fetchStocks', currentStocks);
