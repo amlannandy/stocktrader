@@ -3,46 +3,16 @@ import VueRouter from 'vue-router';
 import Home from './components/Home.vue';
 import Login from './components/login/Login.vue';
 import Register from './components/login/Register.vue';
+import Portfolio from './components/portfolio/Portfolio.vue';
+import Admin from './components/admin/Admin.vue';
+import Stocks from './components/stocks/Stocks.vue';
+import AddNewStock from './components/admin/AddNewStock.vue';
+import AllStocks from './components/admin/AllStocks.vue';
+import AdminSettings from './components/admin/AdminSettings.vue';
 
 import { auth } from './firebaseConfig';
 
 Vue.use(VueRouter);
-
-const Portfolio = (resolve) => {
-  require.ensure(['./components/portfolio/Portfolio.vue'], () => {
-    resolve(require('./components/portfolio/Portfolio.vue'));
-  });
-};
-
-const Stocks = (resolve) => {
-  require.ensure(['./components/stocks/Stocks.vue'], () => {
-    resolve(require('./components/stocks/Stocks.vue'));
-  });
-};
-
-const Admin = (resolve) => {
-  require.ensure(['./components/admin/Admin.vue'], () => {
-    resolve(require('./components/admin/Admin.vue'));
-  });
-};
-
-const AddNewStock = (resolve) => {
-  require.ensure(['./components/admin/AddNewStock.vue'], () => {
-    resolve(require('./components/admin/AddNewStock.vue'));
-  });
-};
-
-const AllStocks = (resolve) => {
-  require.ensure(['./components/admin/AllStocks.vue'], () => {
-    resolve(require('./components/admin/AllStocks.vue'));
-  });
-};
-
-const AdminSettings = (resolve) => {
-  require.ensure(['./components/admin/AdminSettings.vue'], () => {
-    resolve(require('./components/admin/AdminSettings.vue'));
-  });
-};
 
 const routes = [
   { path: '', name: 'home', component: Home, meta: { requiresAuth: true } },
@@ -69,6 +39,7 @@ const routes = [
 
 const router = new VueRouter({
   routes: routes,
+  mode: 'history',
 });
 
 router.beforeEach((to, from, next) => {
